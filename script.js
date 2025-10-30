@@ -25,33 +25,13 @@ async function getAIResponse(prompt) {
   chatBox.scrollTop = chatBox.scrollHeight;
 
   try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ inputs: prompt })
-    });
-
+    const response = await fetch(
+      `https://api.monkedev.com/fun/chat?msg=${encodeURIComponent(prompt)}`
+    );
     const data = await response.json();
+
     chatBox.removeChild(thinkingMsg);
-
-    // 🧠 Diagnostic : on affiche dans la console ce que renvoie le modèle
-    console.log("Réponse Hugging Face :", data);
-
-    let text = "Je n'ai pas compris 😅";
-
-    // Certains modèles renvoient directement un texte dans generated_text
-    if (Array.isArray(data) && data[0]) {
-      text =
-        data[0].generated_text ||
-        data[0].summary_text ||
-        data[0].output_text ||
-        JSON.stringify(data[0]);
-    } else if (data.generated_text) {
-      text = data.generated_text;
-    } else if (data.error) {
-      text = "⚠️ Le modèle est en cours de chargement, réessaie dans 10 secondes.";
-    }
-
+    const text = data.response || "Je n'ai pas compris 😅";
     addMessage(text.trim(), "bot");
   } catch (error) {
     chatBox.removeChild(thinkingMsg);
@@ -59,6 +39,7 @@ async function getAIResponse(prompt) {
     console.error(error);
   }
 }
+
 
 
 // --- Envoi message utilisateur ---
@@ -75,4 +56,5 @@ sendBtn.addEventListener("click", handleSend);
 input.addEventListener("keydown", (e) => {
   if (e.key === "Enter") handleSend();
 });
+
 
