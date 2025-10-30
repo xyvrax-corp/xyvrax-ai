@@ -17,7 +17,6 @@ function addMessage(text, sender) {
 
 // --- Fonction principale d'appel IA ---
 async function getAIResponse(prompt) {
-  // On affiche un message de "réflexion"
   const thinkingMsg = document.createElement("div");
   thinkingMsg.classList.add("message", "bot");
   thinkingMsg.textContent = "💭 Réflexion en cours...";
@@ -30,9 +29,28 @@ async function getAIResponse(prompt) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ inputs: prompt })
     });
+
     const data = await response.json();
     chatBox.removeChild(thinkingMsg);
-    const text = data[0]?.generated_text || data[0]?.output_text || "Je n'ai pas compris 😅";
+
+    // 🧠 Diagnostic : on affiche dans la console ce que renvoie le modèle
+    console.log("Réponse Hugging Face :", data);
+
+    let text = "Je n'ai pas compris 😅";
+
+    // Certains modèles renvoient directement un texte dans generated_text
+    if (Array.isArray(data) && data[0]) {
+      text =
+        data[0].generated_text ||
+        data[0].summary_text ||
+        data[0].output_text ||
+        JSON.stringify(data[0]);
+    } else if (data.generated_text) {
+      text = data.generated_text;
+    } else if (data.error) {
+      text = "⚠️ Le modèle est en cours de chargement, réessaie dans 10 secondes.";
+    }
+
     addMessage(text.trim(), "bot");
   } catch (error) {
     chatBox.removeChild(thinkingMsg);
@@ -40,6 +58,7 @@ async function getAIResponse(prompt) {
     console.error(error);
   }
 }
+
 
 // --- Envoi message utilisateur ---
 function handleSend() {
