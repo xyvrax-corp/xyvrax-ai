@@ -1,23 +1,21 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chatbot IA - WebLLM v2</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>Mon Chatbot</title>
+  <script src="https://cdn.jsdelivr.net/npm/botui/build/botui.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/botui/build/botui.min.css">
 </head>
 <body>
-  <h1>💬 Chatbot IA (100 % local)</h1>
-
-  <div id="chatbox">
-    <div id="messages"></div>
-    <div id="input-area">
-      <input id="user-input" type="text" placeholder="Écris ton message..." />
-      <button id="send-btn">Envoyer</button>
-    </div>
-  </div>
-
-  <script type="module" src="script.js"></script>
+  <div id="botui-app"></div>
+  <script>
+    var botui = new BotUI('botui-app');
+    botui.message.add({ content: 'Bonjour ! Comment puis-je t’aider ?' });
+    botui.action.text({
+      action: { placeholder: 'Écris ici...' }
+    }).then(function (res) {
+      botui.message.add({ content: 'Tu as dit : ' + res.value });
+    });
+  </script>
 </body>
 </html>
-
