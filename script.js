@@ -1,5 +1,6 @@
 // --- Configuration ---
-const API_URL = "https://api-inference.huggingface.co/models/google/flan-t5-small";
+const API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill";
+
 
 // --- Sélecteurs DOM ---
 const chatBox = document.getElementById("chat-box");
@@ -74,3 +75,4 @@ sendBtn.addEventListener("click", handleSend);
 input.addEventListener("keydown", (e) => {
   if (e.key === "Enter") handleSend();
 });
+
