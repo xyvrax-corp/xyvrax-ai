@@ -1,61 +1,54 @@
-// --- Configuration ---
-const API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill";
+import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
 
-
-// --- Sélecteurs DOM ---
-const chatBox = document.getElementById("chat-box");
-const input = document.getElementById("user-input");
 const sendBtn = document.getElementById("send-btn");
+const input = document.getElementById("user-input");
+const messages = document.getElementById("messages");
 
-// --- Fonction pour afficher un message ---
-function addMessage(text, sender) {
-  const msg = document.createElement("div");
-  msg.classList.add("message", sender);
-  msg.textContent = text;
-  chatBox.appendChild(msg);
-  chatBox.scrollTop = chatBox.scrollHeight; // scroll automatique
-}
+// 🔹 Charge un modèle local (petit pour démarrer)
+const engine = await CreateMLCEngine("Phi-3-mini-4k-instruct-q4f16_1", {
+  initProgressCallback: (progress) => {
+    messages.innerHTML = `<p>Chargement du modèle... ${Math.round(progress.progress * 100)}%</p>`;
+  },
+});
 
-// --- Fonction principale d'appel IA ---
-async function getAIResponse(prompt) {
-  const thinkingMsg = document.createElement("div");
-  thinkingMsg.classList.add("message", "bot");
-  thinkingMsg.textContent = "💭 Réflexion en cours...";
-  chatBox.appendChild(thinkingMsg);
-  chatBox.scrollTop = chatBox.scrollHeight;
+messages.innerHTML = "<p>✅ Modèle chargé ! Commence à discuter 👇</p>";
 
-  try {
-    const response = await fetch(
-      `https://api.monkedev.com/fun/chat?msg=${encodeURIComponent(prompt)}`
-    );
-    const data = await response.json();
+// 🔹 Liste de messages (contexte)
+let chatHistory = [];
 
-    chatBox.removeChild(thinkingMsg);
-    const text = data.response || "??? 😅";
-    addMessage(text.trim(), "bot");
-  } catch (error) {
-    chatBox.removeChild(thinkingMsg);
-    addMessage("Erreur de connexion à l'IA 😕", "bot");
-    console.error(error);
-  }
-}
-
-
-
-// --- Envoi message utilisateur ---
-function handleSend() {
+async function handleSend() {
   const text = input.value.trim();
   if (!text) return;
-  addMessage(text, "user");
   input.value = "";
-  getAIResponse(text);
+
+  // Affiche le message utilisateur
+  addMessage(text, "user");
+
+  chatHistory.push({ role: "user", content: text });
+
+  // 🔹 Génère une réponse IA
+  addMessage("...", "bot");
+  const replyIndex = messages.children.length - 1;
+
+  const reply = await engine.chat.completions.create({
+    messages: chatHistory,
+  });
+
+  const botResponse = reply.choices[0].message.content;
+  messages.children[replyIndex].textContent = botResponse;
+
+  chatHistory.push({ role: "assistant", content: botResponse });
 }
 
-// --- Événements ---
 sendBtn.addEventListener("click", handleSend);
-input.addEventListener("keydown", (e) => {
+input.addEventListener("keypress", (e) => {
   if (e.key === "Enter") handleSend();
 });
 
-
-
+function addMessage(content, cls) {
+  const div = document.createElement("div");
+  div.classList.add("message", cls);
+  div.textContent = content;
+  messages.appendChild(div);
+  messages.scrollTop = messages.scrollHeight;
+}
