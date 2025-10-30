@@ -31,7 +31,7 @@ async function getAIResponse(prompt) {
     const data = await response.json();
 
     chatBox.removeChild(thinkingMsg);
-    const text = data.response || "Je n'ai pas compris 😅";
+    const text = data.response || "??? 😅";
     addMessage(text.trim(), "bot");
   } catch (error) {
     chatBox.removeChild(thinkingMsg);
@@ -56,5 +56,6 @@ sendBtn.addEventListener("click", handleSend);
 input.addEventListener("keydown", (e) => {
   if (e.key === "Enter") handleSend();
 });
+
 
 
