@@ -2,20 +2,15 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Mon Chatbot</title>
-  <script src="https://cdn.jsdelivr.net/npm/botui/build/botui.min.js"></script>
+  <title>Mon Chatbot IA</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/botui/build/botui.min.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="botui-app"></div>
-  <script>
-    var botui = new BotUI('botui-app');
-    botui.message.add({ content: 'Bonjour ! Comment puis-je t’aider ?' });
-    botui.action.text({
-      action: { placeholder: 'Écris ici...' }
-    }).then(function (res) {
-      botui.message.add({ content: 'Tu as dit : ' + res.value });
-    });
-  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/botui/build/botui.min.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
