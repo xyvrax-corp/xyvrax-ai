@@ -1,56 +1,22 @@
-import { CreateMLCEngine } from "https://esm.run/@mlc-ai/web-llm";
+var botui = new BotUI('botui-app');
 
-const sendBtn = document.getElementById("send-btn");
-const input = document.getElementById("user-input");
-const messages = document.getElementById("messages");
-
-// 🔹 Charge un modèle local (petit pour démarrer)
-const engine = await CreateMLCEngine("WizardLM-7B-Instruct-v1", {
-  initProgressCallback: (p) =>
-    console.log(`Chargement modèle: ${Math.round(p.progress * 100)}%`),
-});
-
-
-messages.innerHTML = "<p>✅ Modèle chargé ! Commence à discuter 👇</p>";
-
-// 🔹 Liste de messages (contexte)
-let chatHistory = [];
-
-async function handleSend() {
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = "";
-
-  // Affiche le message utilisateur
-  addMessage(text, "user");
-
-  chatHistory.push({ role: "user", content: text });
-
-  // 🔹 Génère une réponse IA
-  addMessage("...", "bot");
-  const replyIndex = messages.children.length - 1;
-
-  const reply = await engine.chat.completions.create({
-    messages: chatHistory,
+botui.message.add({
+  content: 'Bonjour ! Je suis ton chatbot IA. Que veux-tu savoir ?'
+}).then(function () {
+  return botui.action.text({
+    action: {
+      placeholder: 'Pose ta question ici...'
+    }
+  });
+}).then(function (res) {
+  botui.message.add({
+    content: 'Tu as dit : "' + res.value + '". Je réfléchis...'
   });
 
-  const botResponse = reply.choices[0].message.content;
-  messages.children[replyIndex].textContent = botResponse;
-
-  chatHistory.push({ role: "assistant", content: botResponse });
-}
-
-sendBtn.addEventListener("click", handleSend);
-input.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") handleSend();
+  // Simule une réponse IA (à remplacer par une vraie API plus tard)
+  setTimeout(function () {
+    botui.message.add({
+      content: 'Voici une réponse simulée à ta question : "' + res.value + '" 😉'
+    });
+  }, 1000);
 });
-
-function addMessage(content, cls) {
-  const div = document.createElement("div");
-  div.classList.add("message", cls);
-  div.textContent = content;
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
-}
-
-
