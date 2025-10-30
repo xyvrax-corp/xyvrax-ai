@@ -5,12 +5,11 @@ const input = document.getElementById("user-input");
 const messages = document.getElementById("messages");
 
 // 🔹 Charge un modèle local (petit pour démarrer)
-const engine = await CreateMLCEngine("Llama-3-8B-Instruct-q4f16_1", {
-
-  initProgressCallback: (progress) => {
-    messages.innerHTML = `<p>Chargement du modèle... ${Math.round(progress.progress * 100)}%</p>`;
-  },
+const engine = await CreateMLCEngine("WizardLM-7B-Instruct-v1", {
+  initProgressCallback: (p) =>
+    console.log(`Chargement modèle: ${Math.round(p.progress * 100)}%`),
 });
+
 
 messages.innerHTML = "<p>✅ Modèle chargé ! Commence à discuter 👇</p>";
 
@@ -53,4 +52,5 @@ function addMessage(content, cls) {
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
 }
+
 
