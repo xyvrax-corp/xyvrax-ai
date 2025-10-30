@@ -5,7 +5,8 @@ const input = document.getElementById("user-input");
 const messages = document.getElementById("messages");
 
 // 🔹 Charge un modèle local (petit pour démarrer)
-const engine = await CreateMLCEngine("Phi-3-mini-4k-instruct-q4f16_1", {
+const engine = await CreateMLCEngine("Llama-3-8B-Instruct-q4f16_1", {
+
   initProgressCallback: (progress) => {
     messages.innerHTML = `<p>Chargement du modèle... ${Math.round(progress.progress * 100)}%</p>`;
   },
@@ -52,3 +53,4 @@ function addMessage(content, cls) {
   messages.appendChild(div);
   messages.scrollTop = messages.scrollHeight;
 }
+
